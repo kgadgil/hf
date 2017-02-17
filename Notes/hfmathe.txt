@@ -1,0 +1,1 @@
+every equation, every overlap function gives out one number. you put them all together in a matrix using Table. 
