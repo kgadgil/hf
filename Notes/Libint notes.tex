@@ -52,8 +52,9 @@
 %SetFonts
 
 
-\title{Libint Notes}
-\author{The Author}
+\title{Hartree Fock with Libint}
+\subtitle{Notes}
+\author{Kalyani Gadgil}
 %\date{}							% Activate to display a given date or no date
 
 \begin{document}
@@ -80,4 +81,17 @@ auto basis = BasisSet(?STO-3G?, water);  // water is a vector of Atom objects
 ```
 BasisSet is nothing but a std::vector<Shell> (in fact, see the definition of BasisSet class at https://github.com/evaleev/libint/blob/master/include/libint2/basis.h.in\#L44  ? note that it is derived from a vector of Shells, which means it inherits all the methods of std::vector, like size(), which returns the size of the vector, i.e. the number of shells, etc.). But it also provides a number of other functions that are very useful, e.g. BasisSet::nbf() returns the total number of functions in the basis (see https://github.com/evaleev/libint/blob/master/include/libint2/basis.h.in\#L133) and BasisSet::shell2bf() returns the map from shell index to shell address in the basis (see https://github.com/evaleev/libint/blob/master/include/libint2/basis.h.in\#L146).
 Note that Eigen::Map can be used to simplify copying computed shell doublets to the result Matrix, but since Eigen only officially supports matrices you will have to learn how to copy the data yourself. See e.g. https://github.com/evaleev/libint/blob/master/tests/hartree-fock/hartree-fock.cc\#L632
+
+%
+\section{Review Algorithm from Mathematica}
+\subsection{Overlap}
+Analytic solution from Electronic Structure primer
+\subsection{Hartree Fock}
+\begin{enumerate}
+	\item initial guess for fock matrix = core hamiltonian := h = t + v
+	\item pass to function to calculate fock matrix and corrected energies
+	\subitem func hf calls coulomb and exchange
+\end{enumerate}
+
+
 \end{document}  

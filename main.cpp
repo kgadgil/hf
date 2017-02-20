@@ -13,6 +13,15 @@ MatrixXd overlap (BasisSet obs);
 MatrixXd kinetic (BasisSet obs);
 MatrixXd nuclearAtt (BasisSet obs, vector<Atom> atoms);
 MatrixXd coulomb (BasisSet obs, MatrixXd density);
+MatrixXd exchange (BasisSet obs, MatrixXd density);
+MatrixXd hf(BasisSet obs, MatrixXd overlap, MatrixXd Core) {
+//initial guess
+	MatrixXd Fock = Core;
+	Eigen::GeneralizedSelfAdjointEigenSolver<MatrixXd> es(Fock,overlap);
+	cout << es.eigenvalues() << endl;
+
+	vector<double> lowest = sort(es.eigenvalues());
+}
 int main() {
     
     	libint2::initialize();  // safe to use libint now	
@@ -28,9 +37,11 @@ int main() {
 //print basis set
 	cout << "Basis Set" << endl;
 	std::copy(begin(obs),end(obs),std::ostream_iterator<Shell>(std::cout,"\n"));
+	
+	MatrixXd density = MatrixXd::Zero(obs.nbf(),obs.nbf());
+	
 	cout << "Overlap" << endl;
 	MatrixXd S;
-	MatrixXd density = MatrixXd::Zero(obs.nbf(),obs.nbf());
 	S = overlap (obs);
 	cout << S << endl; 
 
@@ -43,11 +54,16 @@ int main() {
 	MatrixXd Nuc;
 	Nuc = nuclearAtt (obs, atoms);
 	cout << Nuc << endl;
+	
+	MatrixXd coreH;
+	coreH= Kin + Nuc;
+	cout << "Core Hamiltonian" << endl;
+	cout << coreH << endl;
 
-	cout << "Coulomb" << endl;
-	MatrixXd Coul;
-	Coul = coulomb(obs,density);
-	cout << Coul << endl; 
+	cout << "HF" << endl;
+	MatrixXd HF;
+	HF = hf(obs, S, coreH);
+	cout << HF << endl; 
  
 	libint2::finalize();  // do not use libint after this 
 	return 0;
@@ -219,4 +235,46 @@ for(auto s1=0; s1!=obs.size(); ++s1) {
 return S;
 }
 
+/*--------------------------*/
+MatrixXd exchange (BasisSet obs, MatrixXd density) {
+//K integrals
+		Engine engine(Operator::coulomb,
+                	obs.max_nprim(),
+                	obs.max_l()
+              	 );
+		auto shell2bf = obs.shell2bf();
+	const auto& buf_vec = engine.results(); // will point to computed shell sets
+                                           // const auto& is very important!
+	MatrixXd S = MatrixXd::Zero(obs.nbf(),obs.nbf());
+	int cnt=0;
+for(auto s1=0; s1!=obs.size(); ++s1) {
+  for(auto s2=0; s2!=obs.size(); ++s2) {
+    for(auto s3=0; s3!=obs.size(); ++s3) {
+      for(auto s4=0; s4!=obs.size(); ++s4) {
+//    cout << "compute shell set {" << s1 << "," << s2 << "} ... ";
+    engine.compute(obs[s1], obs[s2], obs[s3], obs[s4]);
+//    cout << "done" << endl;
 
+    auto bf1 = shell2bf[s1];  // first basis function in first shell
+    auto n1 = obs[s1].size(); // number of basis functions in first shell
+    auto bf2 = shell2bf[s2];  // first basis function in second shell
+    auto n2 = obs[s2].size(); // number of basis functions in second shell
+    auto bf3 = shell2bf[s3];  // first basis function in first shell
+    auto n3 = obs[s3].size(); // number of basis functions in first shell
+    auto bf4 = shell2bf[s4];  // first basis function in first shell
+    auto n4 = obs[s4].size(); // number of basis functions in first shell
+ 
+    auto shellset = buf_vec[0];
+    for(auto f1=0; f1!=n1; ++f1)
+	for(auto f4=0; f4!=n2; ++f4)
+	     for(auto f3=0; f3!=n3; ++f3)
+      		for(auto f2=0; f2!=n4; ++f2) {
+//      cout << "  " << shellset[f1*n4*n3*n2 + f4*n4*n3 + f3*n4 + f2]  << endl;
+	S(bf3+f3,bf4+f4) = shellset[f1*n4*n3*n2 + f4*n4*n3 + f3*n4 + f2] * density(bf3+f3,bf4+f4);
+	}	
+  }
+}
+}
+}	
+return S;
+}
