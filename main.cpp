@@ -9,6 +9,19 @@ using namespace std;
 using namespace libint2;
 using Eigen::MatrixXd;
 
+void printVec (vector <double> vec) {
+	for (int i = 0; i<vec.size(); i++) {
+		cout << vec[i] << endl;
+	}
+}
+
+void printInt (vector <int> vec) {
+	for (int i = 0; i<vec.size(); i++) {
+		cout << vec[i] << endl;
+	}
+
+}
+
 MatrixXd overlap (BasisSet obs);
 MatrixXd kinetic (BasisSet obs);
 MatrixXd nuclearAtt (BasisSet obs, vector<Atom> atoms);
@@ -16,11 +29,17 @@ MatrixXd coulomb (BasisSet obs, MatrixXd density);
 MatrixXd exchange (BasisSet obs, MatrixXd density);
 MatrixXd hf(BasisSet obs, MatrixXd overlap, MatrixXd Core) {
 //initial guess
-	MatrixXd Fock = Core;
-	Eigen::GeneralizedSelfAdjointEigenSolver<MatrixXd> es(Fock,overlap);
-	cout << es.eigenvalues() << endl;
+	Eigen::GeneralizedSelfAdjointEigenSolver<MatrixXd> es(Core,overlap);
+//	cout << es.eigenvectors().col(0) << endl; 
+	MatrixXd c = es.eigenvectors().col(0);
+//	cout << c << endl;
+	MatrixXd newP = c*c.adjoint();
+//	cout << newP << endl;
+	MatrixXd e1 = 1/2*(Core*newP);
+	cout << e1 << endl;
 
-	vector<double> lowest = sort(es.eigenvalues());
+
+
 }
 int main() {
     
