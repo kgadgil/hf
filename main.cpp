@@ -27,18 +27,59 @@ MatrixXd kinetic (BasisSet obs);
 MatrixXd nuclearAtt (BasisSet obs, vector<Atom> atoms);
 MatrixXd coulomb (BasisSet obs, MatrixXd density);
 MatrixXd exchange (BasisSet obs, MatrixXd density);
-MatrixXd hf(BasisSet obs, MatrixXd overlap, MatrixXd Core) {
+void hf(BasisSet obs, MatrixXd overlap, MatrixXd Core, int itr) {
 //initial guess
 	Eigen::GeneralizedSelfAdjointEigenSolver<MatrixXd> es(Core,overlap);
 //	cout << es.eigenvectors().col(0) << endl; 
+//eigenvalues and corresponding eigenvectors already sorted
+//get eigenvectors of lowest eigenvalue in matrix
 	MatrixXd c = es.eigenvectors().col(0);
-//	cout << c << endl;
-	MatrixXd newP = c*c.adjoint();
-//	cout << newP << endl;
-	MatrixXd e1 = 1/2*(Core*newP);
-	cout << e1 << endl;
-
-
+	cout << c << endl;
+	MatrixXd ct = c.transpose();
+//	cout << ct << endl;	
+//form density matrix newP
+	MatrixXd newP = c*ct;
+	cout << "Initial Density Matrix" << endl;
+	cout << newP << endl;
+//initial energy value
+	double e1 = 0;
+	for(int i = 0; i < obs.nbf(); i++){
+		for(int j = 0; j < obs.nbf(); j++) {
+			e1 += Core(i,j) * newP(i,j);	
+		}
+	}
+	cout << "Energy" << e1 << endl;
+	int cnt = 0;
+	MatrixXd density = MatrixXd::Zero(obs.nbf(),obs.nbf());
+	while((newP-density).norm() >= (10^-6) && cnt < 10) {
+		density = newP;
+		MatrixXd coul = MatrixXd::Zero(obs.nbf(),obs.nbf());
+		MatrixXd exch = MatrixXd::Zero(obs.nbf(),obs.nbf());
+		coul = coulomb(obs, density);
+		exch = exchange(obs, density);
+//		cout << "Coulomb \n" << coul << endl;
+//		cout << "Exchange \n" << exch << endl;
+		MatrixXd Fock = Core + 2*coul - exch;
+		cout << "Fock \n" << Fock << endl;
+		Eigen::GeneralizedSelfAdjointEigenSolver<MatrixXd> es(Fock,overlap);
+		MatrixXd c = es.eigenvectors().col(0);
+//		cout << c << endl;
+		MatrixXd ct = c.transpose();
+//		cout << ct << endl;	
+//form density matrix newP
+		MatrixXd newP = c*ct;
+		cout << "Density Matrix" << endl;
+		cout << newP << endl;
+//iterated energy value
+		double e1 = 0;
+		for(int i = 0; i < obs.nbf(); i++){
+			for(int j = 0; j < obs.nbf(); j++) {
+				e1 += (Core(i,j) + Fock(i,j)) * newP(i,j);	
+			}
+		}	
+		cout << "Energy" << e1 << endl;
+		cnt++;
+	}
 
 }
 int main() {
@@ -80,9 +121,7 @@ int main() {
 	cout << coreH << endl;
 
 	cout << "HF" << endl;
-	MatrixXd HF;
-	HF = hf(obs, S, coreH);
-	cout << HF << endl; 
+	hf(obs, S, coreH, 10);
  
 	libint2::finalize();  // do not use libint after this 
 	return 0;
@@ -238,14 +277,15 @@ for(auto s1=0; s1!=obs.size(); ++s1) {
     auto n3 = obs[s3].size(); // number of basis functions in first shell
     auto bf4 = shell2bf[s4];  // first basis function in first shell
     auto n4 = obs[s4].size(); // number of basis functions in first shell
- 
+
     auto shellset = buf_vec[0];
-    for(auto f1=0; f1!=n1; ++f1)
+    for(auto f1=0, cnt=0; f1!=n1; ++f1)
 	for(auto f2=0; f2!=n2; ++f2)
 	     for(auto f3=0; f3!=n3; ++f3)
-      		for(auto f4=0; f4!=n4; ++f4) {
+      		for(auto f4=0; f4!=n4; ++f4, ++cnt) {
+//	cout << cnt << endl;
 //      cout << "  " << shellset[f1*n4*n3*n2 + f2*n4*n3 + f3*n4 + f4]  << endl;
-	S(bf3+f3,bf4+f4) = shellset[f1*n4*n3*n2 + f2*n4*n3 + f3*n4 + f4] * density(bf3+f3,bf4+f4);
+	S(bf1+f1,bf2+f2) += shellset[f1*n4*n3*n2 + f2*n4*n3 + f3*n4 + f4] * density(bf3+f3,bf4+f4);
 	}	
   }
 }
@@ -276,20 +316,20 @@ for(auto s1=0; s1!=obs.size(); ++s1) {
 
     auto bf1 = shell2bf[s1];  // first basis function in first shell
     auto n1 = obs[s1].size(); // number of basis functions in first shell
-    auto bf2 = shell2bf[s2];  // first basis function in second shell
+    auto bf2 = shell2bf[s3];  // first basis function in second shell
     auto n2 = obs[s2].size(); // number of basis functions in second shell
-    auto bf3 = shell2bf[s3];  // first basis function in first shell
+    auto bf3 = shell2bf[s2];  // first basis function in first shell
     auto n3 = obs[s3].size(); // number of basis functions in first shell
     auto bf4 = shell2bf[s4];  // first basis function in first shell
     auto n4 = obs[s4].size(); // number of basis functions in first shell
  
     auto shellset = buf_vec[0];
     for(auto f1=0; f1!=n1; ++f1)
-	for(auto f4=0; f4!=n2; ++f4)
-	     for(auto f3=0; f3!=n3; ++f3)
-      		for(auto f2=0; f2!=n4; ++f2) {
+	for(auto f3=0; f3!=n3; ++f3)
+	     for(auto f2=0; f2!=n2; ++f2)
+      		for(auto f4=0; f4!=n4; ++f4) {
 //      cout << "  " << shellset[f1*n4*n3*n2 + f4*n4*n3 + f3*n4 + f2]  << endl;
-	S(bf3+f3,bf4+f4) = shellset[f1*n4*n3*n2 + f4*n4*n3 + f3*n4 + f2] * density(bf3+f3,bf4+f4);
+	S(bf1+f1,bf2+f2) += shellset[f1*n3*n2*n4 + f3*n2*n4 + f2*n4 + f4] * density(bf3+f3,bf4+f4);
 	}	
   }
 }
