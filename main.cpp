@@ -27,14 +27,14 @@ MatrixXd kinetic (BasisSet obs);
 MatrixXd nuclearAtt (BasisSet obs, vector<Atom> atoms);
 MatrixXd coulomb (BasisSet obs, MatrixXd density);
 MatrixXd exchange (BasisSet obs, MatrixXd density);
-void hf(BasisSet obs, MatrixXd overlap, MatrixXd Core, int itr) {
+void hf(BasisSet obs, MatrixXd overlap, MatrixXd Core, int itr, vector<Atom> atoms) {
 //initial guess
 	Eigen::GeneralizedSelfAdjointEigenSolver<MatrixXd> es(Core,overlap);
 //	cout << es.eigenvectors().col(0) << endl; 
 //eigenvalues and corresponding eigenvectors already sorted
 //get eigenvectors of lowest eigenvalue in matrix
 	MatrixXd c = es.eigenvectors().col(0);
-	cout << c << endl;
+//	cout << c << endl;
 	MatrixXd ct = c.transpose();
 //	cout << ct << endl;	
 //form density matrix newP
@@ -48,10 +48,10 @@ void hf(BasisSet obs, MatrixXd overlap, MatrixXd Core, int itr) {
 			e1 += Core(i,j) * newP(i,j);	
 		}
 	}
-	cout << "Energy" << e1 << endl;
+	cout << "First Energy " << e1 << endl;
 	int cnt = 0;
 	MatrixXd density = MatrixXd::Zero(obs.nbf(),obs.nbf());
-	while((newP-density).norm() >= (10^-6) && cnt < 10) {
+	while((newP-density).norm() >= (10^-6) && cnt < 1) {
 		density = newP;
 		MatrixXd coul = MatrixXd::Zero(obs.nbf(),obs.nbf());
 		MatrixXd exch = MatrixXd::Zero(obs.nbf(),obs.nbf());
@@ -61,13 +61,13 @@ void hf(BasisSet obs, MatrixXd overlap, MatrixXd Core, int itr) {
 //		cout << "Exchange \n" << exch << endl;
 		MatrixXd Fock = Core + 2*coul - exch;
 		cout << "Fock \n" << Fock << endl;
-		Eigen::GeneralizedSelfAdjointEigenSolver<MatrixXd> es(Fock,overlap);
-		MatrixXd c = es.eigenvectors().col(0);
-//		cout << c << endl;
-		MatrixXd ct = c.transpose();
-//		cout << ct << endl;	
+		Eigen::GeneralizedSelfAdjointEigenSolver<MatrixXd> es1(Fock,overlap);
+		MatrixXd c1 = es1.eigenvectors().col(0);
+//		cout << c1 << endl;
+		MatrixXd ct1 = c1.transpose();
+//		cout << ct1 << endl;	
 //form density matrix newP
-		MatrixXd newP = c*ct;
+		MatrixXd newP = c1*ct1;
 		cout << "Density Matrix" << endl;
 		cout << newP << endl;
 //iterated energy value
@@ -77,10 +77,13 @@ void hf(BasisSet obs, MatrixXd overlap, MatrixXd Core, int itr) {
 				e1 += (Core(i,j) + Fock(i,j)) * newP(i,j);	
 			}
 		}	
-		cout << "Energy" << e1 << endl;
+		cout << "Energy " << e1 << endl;
+//Nuclear Energy
+		
 		cnt++;
+		
 	}
-
+	cout << atoms << endl;
 }
 int main() {
     
@@ -121,7 +124,7 @@ int main() {
 	cout << coreH << endl;
 
 	cout << "HF" << endl;
-	hf(obs, S, coreH, 10);
+	hf(obs, S, coreH, 10, atoms);
  
 	libint2::finalize();  // do not use libint after this 
 	return 0;
