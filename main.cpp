@@ -27,6 +27,7 @@ MatrixXd kinetic (BasisSet obs);
 MatrixXd nuclearAtt (BasisSet obs, vector<Atom> atoms);
 MatrixXd coulomb (BasisSet obs, MatrixXd density);
 MatrixXd exchange (BasisSet obs, MatrixXd density);
+
 void hf(BasisSet obs, MatrixXd overlap, MatrixXd Core, int itr, vector<Atom> atoms) {
 //initial guess
 	Eigen::GeneralizedSelfAdjointEigenSolver<MatrixXd> es(Core,overlap);
@@ -83,8 +84,11 @@ void hf(BasisSet obs, MatrixXd overlap, MatrixXd Core, int itr, vector<Atom> ato
 		cnt++;
 		
 	}
-	cout << atoms << endl;
+	vector<double> atoms = make_point_charges(atoms);
+	cout << atoms << endl
+
 }
+
 int main() {
     
     	libint2::initialize();  // safe to use libint now	

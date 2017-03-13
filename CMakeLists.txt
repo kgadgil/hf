@@ -20,7 +20,7 @@ link_directories(${LIBINT2_LIB})
        
 # The executables are made using the first command from the source file 
 #the second links the directory we found earlier to the executaable to run the code
-add_executable(run main.cpp)
+add_executable(run mp2.cpp)
 target_link_libraries(run int2)
 
 

@@ -57,38 +57,38 @@ include CMakeFiles/run.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/run.dir/flags.make
 
-CMakeFiles/run.dir/main.cpp.o: CMakeFiles/run.dir/flags.make
-CMakeFiles/run.dir/main.cpp.o: main.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/kg/HF/hf/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/run.dir/main.cpp.o"
-	/Library/Developer/CommandLineTools/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/run.dir/main.cpp.o -c /Users/kg/HF/hf/main.cpp
+CMakeFiles/run.dir/mp2.cpp.o: CMakeFiles/run.dir/flags.make
+CMakeFiles/run.dir/mp2.cpp.o: mp2.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/kg/HF/hf/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/run.dir/mp2.cpp.o"
+	/Library/Developer/CommandLineTools/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/run.dir/mp2.cpp.o -c /Users/kg/HF/hf/mp2.cpp
 
-CMakeFiles/run.dir/main.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/run.dir/main.cpp.i"
-	/Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/kg/HF/hf/main.cpp > CMakeFiles/run.dir/main.cpp.i
+CMakeFiles/run.dir/mp2.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/run.dir/mp2.cpp.i"
+	/Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/kg/HF/hf/mp2.cpp > CMakeFiles/run.dir/mp2.cpp.i
 
-CMakeFiles/run.dir/main.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/run.dir/main.cpp.s"
-	/Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/kg/HF/hf/main.cpp -o CMakeFiles/run.dir/main.cpp.s
+CMakeFiles/run.dir/mp2.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/run.dir/mp2.cpp.s"
+	/Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/kg/HF/hf/mp2.cpp -o CMakeFiles/run.dir/mp2.cpp.s
 
-CMakeFiles/run.dir/main.cpp.o.requires:
+CMakeFiles/run.dir/mp2.cpp.o.requires:
 
-.PHONY : CMakeFiles/run.dir/main.cpp.o.requires
+.PHONY : CMakeFiles/run.dir/mp2.cpp.o.requires
 
-CMakeFiles/run.dir/main.cpp.o.provides: CMakeFiles/run.dir/main.cpp.o.requires
-	$(MAKE) -f CMakeFiles/run.dir/build.make CMakeFiles/run.dir/main.cpp.o.provides.build
-.PHONY : CMakeFiles/run.dir/main.cpp.o.provides
+CMakeFiles/run.dir/mp2.cpp.o.provides: CMakeFiles/run.dir/mp2.cpp.o.requires
+	$(MAKE) -f CMakeFiles/run.dir/build.make CMakeFiles/run.dir/mp2.cpp.o.provides.build
+.PHONY : CMakeFiles/run.dir/mp2.cpp.o.provides
 
-CMakeFiles/run.dir/main.cpp.o.provides.build: CMakeFiles/run.dir/main.cpp.o
+CMakeFiles/run.dir/mp2.cpp.o.provides.build: CMakeFiles/run.dir/mp2.cpp.o
 
 
 # Object files for target run
 run_OBJECTS = \
-"CMakeFiles/run.dir/main.cpp.o"
+"CMakeFiles/run.dir/mp2.cpp.o"
 
 # External object files for target run
 run_EXTERNAL_OBJECTS =
 
-run: CMakeFiles/run.dir/main.cpp.o
+run: CMakeFiles/run.dir/mp2.cpp.o
 run: CMakeFiles/run.dir/build.make
 run: CMakeFiles/run.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/kg/HF/hf/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable run"
@@ -99,7 +99,7 @@ CMakeFiles/run.dir/build: run
 
 .PHONY : CMakeFiles/run.dir/build
 
-CMakeFiles/run.dir/requires: CMakeFiles/run.dir/main.cpp.o.requires
+CMakeFiles/run.dir/requires: CMakeFiles/run.dir/mp2.cpp.o.requires
 
 .PHONY : CMakeFiles/run.dir/requires
 

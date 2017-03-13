@@ -1,1 +1,1 @@
-/Library/Developer/CommandLineTools/usr/bin/c++    -Wl,-search_paths_first -Wl,-headerpad_max_install_names  CMakeFiles/run.dir/main.cpp.o  -o run  -L/Users/kg/Software/kg_libint/install/lib -Wl,-rpath,/Users/kg/Software/kg_libint/install/lib  -lint2 
+/Library/Developer/CommandLineTools/usr/bin/c++    -Wl,-search_paths_first -Wl,-headerpad_max_install_names  CMakeFiles/run.dir/mp2.cpp.o  -o run  -L/Users/kg/Software/kg_libint/install/lib -Wl,-rpath,/Users/kg/Software/kg_libint/install/lib  -lint2 
