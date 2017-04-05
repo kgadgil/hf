@@ -83,81 +83,75 @@ int main() {
 	SMART ALGORITHM FOR MP2
 */
 int mp2 (BasisSet obs, MatrixXd evec, MatrixXd eval, int occ, double enuc) {
+/*
+________ 	________	________
+_cip_0_|    *	_p_|_q_|  = 	
+_0_|_0_|	_r_|_s_|
+
+*/
 	vector<double> intg;
 	intg = tensor(obs);
-	int N = obs.nbf();
-	vector<double> iqrs (N), iqjs (N), iajs (N), iajb (N);
+	vector<double> iqrs, iqjs, iajs, iajb;
 //	printVec(intg);
-//	cout << "nbf" << obs.nbf() << endl;	
-	auto shell2bf = obs.shell2bf();
-	double n4, n3, n2, n1;
-	for(auto s1=0; s1!=obs.size(); ++s1) {
-		for(auto s2=0; s2!=obs.size(); ++s2) {
-    			for(auto s3=0; s3!=obs.size(); ++s3) {
-      				for(auto s4=0; s4!=obs.size(); ++s4) {
-//    cout << "compute shell set {" << s1 << "," << s2 << "} ... ";
-// engine.compute(obs[s1], obs[s2], obs[s3], obs[s4]);
-//  auto bf1 = shell2bf[s1];  // first basis function in first shell
-	n1 = obs[s1].size(); // number of basis functions in first shell
-	auto bf2 = shell2bf[s2];  // first basis function in second shell
-	n2 = obs[s2].size(); // number of basis functions in second shell
-	auto bf3 = shell2bf[s3];  // first basis function in first shell
-	n3 = obs[s3].size(); // number of basis functions in first shell
-	auto bf4 = shell2bf[s4];  // first basis function in first shell
-	n4 = obs[s4].size(); // number of basis functions in first shell
-}}}}
+//	cout << "nbf" << obs.nbf() << endl;
+	int cnt=0;
 	double sum = 0;	
-	for (int p = 0; p < occ; p++) {
-		for (int nu = 0; nu < obs.nbf(); nu++) {
-			for (int ro = 0; ro < obs.nbf(); ro++) { 
-				for (int sigma = 0; sigma < obs.nbf(); sigma++) {
-					for (int mu = 0; mu < obs.nbf(); mu++) {
-						iqrs[p*n4*n3*n2 + nu*n4*n3 + ro*n4 + sigma] += evec(mu,p) * intg[mu*n4*n3*n2 + nu*n4*n3 + ro*n4 + sigma];
-//						sum += evec(mu,p) * intg[mu*n4*n3*n2 + nu*n4*n3 + ro*n4 + sigma];
+	for (int i = 0, cnt=0; i < occ; i++) {
+		sum = 0;
+		for (int p = 0; p < obs.nbf(); p++) {
+			for (int q = 0; q < obs.nbf(); q++) { 
+				for (int r = 0; r < obs.nbf(); r++) {
+					for (int s = 0; s < obs.nbf(); s++) {
+						sum += evec(p,i) * intg[p+q+r+s];
 					}
 				}
 			}	
-		}// iqrs[p*n4*n3*n2 + nu*n4*n3 + ro*n4 + sigma] = sum;
+		} iqrs.push_back(sum); 
+	cnt++;
 	}
-	sum = 0;	
-	for (int p = 0; p < occ; p++) {
-		for (int q = 0; q < obs.nbf(); q++) {
-			for (int ro = 0; ro < obs.nbf(); ro++) { 
-				for (int sigma = 0; sigma < obs.nbf(); sigma++) {
-					for (int nu = 0; nu < obs.nbf(); nu++) {
-							iqjs[p*n4*n3*n2 + q*n4*n3 + ro*n4 + sigma] += evec(nu,q) * iqrs[p*n4*n3*n2 + nu*n4*n3 + ro*n4 + sigma];
-//							sum += evec(nu,q) * iqrs[p*n4*n3*n2 + nu*n4*n3 + ro*n4 + sigma];
+	printVec(iqrs);
+/*	sum = 0;
+//	cout << "cnt " << cnt << endl;
+	for (int j = 0; j <= cnt; j++) {
+		sum = 0;
+		for (int p = 0; p < obs.nbf(); p++) {
+			for (int q = 0; q < obs.nbf(); q++) { 
+				for (int r = 0; r < obs.nbf(); r++) {
+					for (int s = 0; s < obs.nbf(); s++) {
+						sum += evec(q,j) * iqrs[p+q+r+s];
 					}
 				}
 			}	
-		} //iqjs[p*n4*n3*n2 + q*n4*n3 + ro*n4 + sigma] = sum;
+		} iqjs.push_back(sum); 
 	}
 	sum = 0;
-	for (int p = 0; p < occ; p++) {
-		for (int q = 0; q < obs.nbf(); q++) {
-			for (int r = 0; r < obs.nbf(); r++) { 
-				for (int sigma = 0; sigma < obs.nbf(); sigma++) {
-					for (int ro = 0; ro < obs.nbf(); ro++) {
-							iajs[p*n4*n3*n2 + q*n4*n3 + r*n4 + sigma] += evec(ro,r) * iqjs[p*n4*n3*n2 + q*n4*n3 + ro*n4 + sigma];
-//						sum += evec(ro,r) * iqjs[p*n4*n3*n2 + q*n4*n3 + ro*n4 + sigma];
+	for (int k = 0; k <= cnt; k++) {
+		sum = 0;
+		for (int p = 0; p < obs.nbf(); p++) {
+			for (int q = 0; q < obs.nbf(); q++) { 
+				for (int r = 0; r < obs.nbf(); r++) {
+					for (int s = 0; s < obs.nbf(); s++) {
+						sum += evec(r,k) * iqjs[p+q+r+s];
 					}
 				}
 			}	
-		} // 	iajs[p*n4*n3*n2 + q*n4*n3 + r*n4 + sigma] = sum;
+		} iajs.push_back(sum);  
 	}
-	sum=0;
-	for (int p = 0; p < occ; p++) {
-		for (int q = 0; q < obs.nbf(); q++) {
-			for (int r = 0; r < obs.nbf(); r++) { 
-				for (int s = 0; s < obs.nbf(); s++) {
-					for (int sigma = 0; sigma < obs.nbf(); sigma++) {
-						iajb[p*n4*n3*n2 + q*n4*n3 + r*n4 + s] += evec(sigma,s) * iajs[p*n4*n3*n2 + q*n4*n3 + r*n4 + sigma];
-		//					sum += evec(sigma,s) * iajs[p*n4*n3*n2 + q*n4*n3 + r*n4 + sigma];
+	sum = 0;
+	for (int l = 0; l <= cnt; l++) {
+		sum = 0;
+		for (int p = 0; p < obs.nbf(); p++) {
+			for (int q = 0; q < obs.nbf(); q++) { 
+				for (int r = 0; r < obs.nbf(); r++) {
+					for (int s = 0; s < obs.nbf(); s++) {
+						sum += evec(s,l) * iajs[p+q+r+s];
 					}
 				}
 			}	
-		} //iajb[p*n4*n3*n2 + q*n4*n3 + r*n4 + s] = sum; 
+		} iajb.push_back(sum); 
 	}
+
+*/
 
 //N = # electrons
 //range of ijk 0 - N/2
@@ -167,18 +161,14 @@ int mp2 (BasisSet obs, MatrixXd evec, MatrixXd eval, int occ, double enuc) {
 		for (int a = occ; a < obs.nbf(); a++) {
 			for (int j = 0; j < occ; j++) { 
 				for (int b = occ; b < obs.nbf(); b++){
-					emp2 += (iajb[i*n4*n3*n2 + a*n4*n3 + j*n4 + b]*(2*iajb[i*n4*n3*n2 + a*n4*n3 + j*n4 + b] - iajb[i*n4*n3*n2 + b*n4*n3 + j*n4 + a]))/(eval(i) + eval(j) - eval(a) - eval(b));
+					emp2 += (iajb[i+a+j+b]*(2*iajb[i+a+j+b] - iajb[i+b+j+a]))/(eval(i) + eval(j) - eval(a) - eval(b));
 				}
 			}
 		}
 	}
-	iqrs.resize(0);
-	iqjs.resize(0);
-	iajs.resize(0);
-	iajb.resize(0);
-
 //	printVec(pqrs);
 	cout << "\t Smart EMP2 " << emp2 << endl;
+//	cout << "\t Total E = " << emp2+enuc <<endl;
 	return 0;
 }
 
@@ -224,7 +214,11 @@ int noddy (BasisSet obs, MatrixXd evec, MatrixXd eval, int occ, double enuc) {
 			}
 		}
 	}
+//	cout << "size of " << pqrs.size() << endl;
+//	printVec(pqrs);
+//	cout << pqrs[0+1+0+1] << endl;
 	cout << "\t Noddy EMP2 " << emp2 << endl;
+//	cout << "\t Total E = " << emp2+enuc <<endl;
 	return 0;
 
 }
